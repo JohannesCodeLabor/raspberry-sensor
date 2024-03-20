@@ -37,7 +37,7 @@ def main():
                     filePathDHT = filePathDHT[:fileTypeBeginIndex] + ".csv"
                 file = open(filePathDHT, 'w')
                 file.close()
-                dhtDefined = True  # only gets activated when no error ocured until here
+                dhtDefined = True  # only gets activated when no error occurred until here
             except Exception as error:
                 print(error.args[0])
                 continue
@@ -45,7 +45,7 @@ def main():
             if choiceDHT == "1":
                 file = open(filePathDHT, 'w')
                 # write the header of the new file:
-                file.write("\";Zeit in JHR-MNT-TAG STD:MIN\";Temperatur in °C\";Luftfeuchte in %\"\n")
+                file.write("\"Zeit in JHR-MNT-TAG,STD:MIN\";\"Temperatur in °C\";\"Luftfeuchte in %\"\n")
                 file.close()
 
         ########################################################
@@ -75,22 +75,22 @@ def main():
             if choiceADX == "1":
                 file = open(filePathADX, 'w')
                 # write the header of the new file:
-                file.write("\"Zeit in JHR-MNT-TAG STD:MIN\";BeschleunigungX\";BeschleunigungY\";BeschleunigungZ\"\n")
+                file.write("\"Zeit in JHR-MNT-TAG,STD:MIN\";\"BeschleunigungX\";\"BeschleunigungY\";\"BeschleunigungZ"
+                           "\"\n")
                 file.close()
 
         # go now into the main-program:
-        print(
-            "Die Beschleunigungsdaten und die Temperaturwerte werden nun im Minutentakt in die "
-            "angegebenen Dateien gespeichert.")
+        print("Die Beschleunigungsdaten und die Temperaturwerte werden nun im Minutentakt in die "
+              "angegebenen Dateien gespeichert.")
         print("Zum Beenden des Programms drücken Sie Str+C.\n")
         counter = 0
         while True:
-            timeString = datetime.now().strftime("\"%Y-%m-%d %H:%M\";")
+            timeString = datetime.now().strftime("\"%Y-%m-%d,%H:%M\";")
             if counter >= 60:  # do every minute:
                 counter = 0
                 try:  # save acceleration-data
                     fileADX = open(filePathADX, 'a')
-                    fileADX.write(str(timeString) + "\"%f\";%f\";%f\";\n" % accelerometer.acceleration)
+                    fileADX.write(str(timeString) + "\"%f\";\"%f\";\"%f\"\n" % accelerometer.acceleration)
                     fileADX.close()
                 except Exception as error:
                     fileADX.close()
@@ -100,7 +100,7 @@ def main():
                     temperature = sensor.temperature
                     humidity = sensor.humidity
                     fileDHT = open(filePathDHT, 'a')
-                    fileDHT.write(str(timeString) + "\"" + str(temperature) + "\";" + str(humidity) + "\"\n")
+                    fileDHT.write(str(timeString) + "\"" + str(temperature) + "\";\"" + str(humidity) + "\"\n")
                     fileDHT.close()
                 except RuntimeError as error:
                     print("Errors happen fairly often, DHTs are hard to read, just keep going:")
