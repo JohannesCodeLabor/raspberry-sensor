@@ -100,7 +100,7 @@ def main():
                     temperature = sensor.temperature
                     humidity = sensor.humidity
                     fileDHT = open(filePathDHT, 'a')
-                    fileDHT.write(str(timeString) + "\"" + str(temperature) + "\";\"" + str(humidity) + "\"\n")
+                    fileDHT.write(str(timeString) + "\"" + str(temperature).replace(".", ",") + "\";\"" + str(humidity).replace(".", ",") + "\"\n")
                     fileDHT.close()
                 except RuntimeError as error:
                     print("Errors happen fairly often, DHTs are hard to read, just keep going:")
