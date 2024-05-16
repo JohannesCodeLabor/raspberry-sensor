@@ -89,12 +89,13 @@ def main():
             if counter >= 60:  # do every minute:
                 counter = 0
                 try:  # save acceleration-data
+                    accelerationString = "\"%f\";\"%f\";\"%f\"\n" % accelerometer.acceleration
                     fileADX = open(filePathADX, 'a')
-                    fileADX.write(str(timeString) + "\"%f\";\"%f\";\"%f\"\n" % accelerometer.acceleration)
+                    fileADX.write(str(timeString) + accelerationString.replace(".", ","))
                     fileADX.close()
                 except Exception as error:
                     fileADX.close()
-                    raise error
+                    pass
 
                 try:  # save temperature-data
                     temperature = sensor.temperature
@@ -108,7 +109,7 @@ def main():
                 except Exception as error:
                     sensor.exit()
                     fileDHT.close()
-                    raise error
+                    pass
             counter += 1
             time.sleep(1.0)  # wait for a minute
 
