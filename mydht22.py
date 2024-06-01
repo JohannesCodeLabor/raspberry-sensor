@@ -75,43 +75,79 @@ def main():
             if choiceADX == "1":
                 file = open(filePathADX, 'w')
                 # write the header of the new file:
-                file.write("\"Zeit in JHR-MNT-TAG,STD:MIN\";\"BeschleunigungX\";\"BeschleunigungY\";\"BeschleunigungZ"
-                           "\"\n")
+                file.write("\"Zeit in JHR-MNT-TAG,"
+                           "STD:MIN\";\"MaxBeschlSeitLetztemEintragX\";\"MinBeschlSeitLetztemEintragX"
+                           "\";\"MaxBeschlSeitLetztemEintragY\";\"MinBeschlSeitLetztemEintragY"
+                           "\";\"MaxBeschlSeitLetztemEintragZ\";\"MinBeschlSeitLetztemEintragZ"
+                           "\";\"AnzahlGemessenerWerte\"\n")
                 file.close()
 
         # go now into the main-program:
         print("Die Beschleunigungsdaten und die Temperaturwerte werden nun im Minutentakt in die "
               "angegebenen Dateien gespeichert.")
         print("Zum Beenden des Programms drücken Sie Str+C.\n")
-        counter = 0
+        numOfAccSamples = 0  # we store that to know how many samples went into the min/max-variables of acceleration
+        timeOfLastMemorySaveAcc = 0  # only every minute the data gets written into memory
+        timeOfLastMemorySaveTemp = 0  # only every minute the data gets written into memory
+        minMaxAcc = [0, 0, 0, 10000, 10000, 10000]  # maxAccX, maxAccY, maxAccZ, minAccX, minAccY, minAccZ
         while True:
-            timeString = datetime.now().strftime("\"%Y-%m-%d,%H:%M\";")
-            if counter >= 60:  # do every minute:
-                counter = 0
+            # sample the acceleration max/min:
+            numOfAccSamples += 1
+            accSample = accelerometer.acceleration
+            if accSample[0] > minMaxAcc[0]:  # maxAccX
+                minMaxAcc[0] = accSample[0]
+            elif accSample[0] < minMaxAcc[3]:  # minAccX
+                minMaxAcc[3] = accSample[0]
+            if accSample[1] > minMaxAcc[1]:  # maxAccY
+                minMaxAcc[1] = accSample[1]
+            elif accSample[1] < minMaxAcc[4]:  # minAccY
+                minMaxAcc[4] = accSample[1]
+            if accSample[2] > minMaxAcc[2]:  # maxAccZ
+                minMaxAcc[2] = accSample[2]
+            elif accSample[2] < minMaxAcc[5]:  # minAccZ
+                minMaxAcc[5] = accSample[2]
+
+            # save acceleration data into memory:
+            if time.time() - timeOfLastMemorySaveAcc >= 60:
+                timeString = datetime.now().strftime("\"%Y-%m-%d,%H:%M\";")
+                noErrorOccurredAcc = True
                 try:  # save acceleration-data
-                    accelerationString = "\"%f\";\"%f\";\"%f\"\n" % accelerometer.acceleration
+                    accString = "\"" + minMaxAcc[0] + "\";\"" + minMaxAcc[3] + "\";\"" + minMaxAcc[1] + "\";\"" + \
+                                minMaxAcc[4] + "\";\"" + minMaxAcc[2] + "\";\"" + minMaxAcc[5] + "\";\"" + numOfAccSamples
+                    accString += "\"\n"
+                    accString = accString.replace(".", ",")  # for excel-reasons they need to be replaced
                     fileADX = open(filePathADX, 'a')
-                    fileADX.write(str(timeString) + accelerationString.replace(".", ","))
+                    fileADX.write(str(timeString) + accString)
                     fileADX.close()
                 except Exception as error:
+                    noErrorOccurredAcc = False
+                    print(error.args[0])
                     fileADX.close()
                     pass
+                if noErrorOccurredAcc:  # only if the value got really stored we wait for another minute
+                    numOfAccSamples = 0
+                    minMaxAcc = [0, 0, 0, 10000, 10000, 10000]
+                    timeOfLastMemorySaveAcc = time.time()
 
+            # save temperature data into memory:
+            if time.time() - timeOfLastMemorySaveTemp >= 60:
+                noErrorOccurredTemp = True
                 try:  # save temperature-data
                     temperature = sensor.temperature
                     humidity = sensor.humidity
                     fileDHT = open(filePathDHT, 'a')
-                    fileDHT.write(str(timeString) + "\"" + str(temperature).replace(".", ",") + "\";\"" + str(humidity).replace(".", ",") + "\"\n")
+                    fileDHT.write(
+                        str(timeString) + "\"" + str(temperature).replace(".", ",") + "\";\"" + str(humidity).replace(
+                            ".", ",") + "\"\n")
                     fileDHT.close()
-                except RuntimeError as error:
-                    print("Errors happen fairly often, DHTs are hard to read, just keep going:")
-                    print(error.args[0])
                 except Exception as error:
+                    noErrorOccurredTemp = False
+                    print(error.args[0])
                     sensor.exit()
                     fileDHT.close()
                     pass
-            counter += 1
-            time.sleep(1.0)  # wait for a minute
+                if noErrorOccurredTemp:  # only if the value got really stored we wait for another minute
+                    timeOfLastMemorySaveTemp = time.time()
 
 
 if __name__ == '__main__':
