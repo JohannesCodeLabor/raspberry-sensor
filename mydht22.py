@@ -89,7 +89,7 @@ def main():
         numOfAccSamples = 0  # we store that to know how many samples went into the min/max-variables of acceleration
         timeOfLastMemorySaveAcc = 0  # only every minute the data gets written into memory
         timeOfLastMemorySaveTemp = 0  # only every minute the data gets written into memory
-        minMaxAcc = [0, 0, 0, 10000, 10000, 10000]  # maxAccX, maxAccY, maxAccZ, minAccX, minAccY, minAccZ
+        minMaxAcc = [-10000, -10000, -10000, 10000, 10000, 10000]  # maxAccX, maxAccY, maxAccZ, minAccX, minAccY, minAccZ
         while True:
             # sample the acceleration max/min:
             numOfAccSamples += 1
