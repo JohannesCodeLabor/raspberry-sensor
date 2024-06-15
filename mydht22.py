@@ -126,7 +126,7 @@ def main():
                     pass
                 if noErrorOccurredAcc:  # only if the value got really stored we wait for another minute
                     numOfAccSamples = 0
-                    minMaxAcc = [0, 0, 0, 10000, 10000, 10000]
+                    minMaxAcc = [-10000, -10000, -10000, 10000, 10000, 10000]
                     timeOfLastMemorySaveAcc = time.time()
 
             # save temperature data into memory:
