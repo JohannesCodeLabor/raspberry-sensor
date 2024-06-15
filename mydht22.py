@@ -112,9 +112,9 @@ def main():
                 timeString = datetime.now().strftime("\"%Y-%m-%d,%H:%M\";")
                 noErrorOccurredAcc = True
                 try:  # save acceleration-data
-                    accString = "\"" + minMaxAcc[0] + "\";\"" + minMaxAcc[3] + "\";\"" + minMaxAcc[1] + "\";\"" + \
-                                minMaxAcc[4] + "\";\"" + minMaxAcc[2] + "\";\"" + minMaxAcc[5] + "\";\"" + numOfAccSamples
-                    accString += "\"\n"
+                    accString = "\"" + str(minMaxAcc[0]) + "\";\"" + str(minMaxAcc[3]) + "\";\"" + str(minMaxAcc[1])\
+                                + "\";\"" + str(minMaxAcc[4]) + "\";\"" + str(minMaxAcc[2]) + "\";\"" + str(minMaxAcc[5])\
+                                + "\";\"" + str(numOfAccSamples) + "\"\n"
                     accString = accString.replace(".", ",")  # for excel-reasons they need to be replaced
                     fileADX = open(filePathADX, 'a')
                     fileADX.write(str(timeString) + accString)
