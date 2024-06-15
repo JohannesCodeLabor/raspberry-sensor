@@ -87,8 +87,8 @@ def main():
               "angegebenen Dateien gespeichert.")
         print("Zum Beenden des Programms drücken Sie Str+C.\n")
         numOfAccSamples = 0  # we store that to know how many samples went into the min/max-variables of acceleration
-        timeOfLastMemorySaveAcc = 0  # only every minute the data gets written into memory
-        timeOfLastMemorySaveTemp = 0  # only every minute the data gets written into memory
+        timeOfLastMemorySaveAcc = time.time()  # only every minute the data gets written into memory
+        timeOfLastMemorySaveTemp = time.time()  # only every minute the data gets written into memory
         minMaxAcc = [-10000, -10000, -10000, 10000, 10000, 10000]  # maxAccX, maxAccY, maxAccZ, minAccX, minAccY, minAccZ
         while True:
             # sample the acceleration max/min:
